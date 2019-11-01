@@ -184,6 +184,7 @@ func TestBackpressure(t *testing.T) {
 	runtime.Gosched() // tickle the runtime in case there might be a timing bug
 	assert.Equal(t, int64(0), atomic.LoadInt64(&sent))
 	canReply <- struct{}{} // now the two requests should send
+	// The third request will be blocked if SucceedsSoon calls t.Fatalf
 	testutils.SucceedsSoon(t, func() error {
 		if numSent := atomic.LoadInt64(&sent); numSent != 2 {
 			return fmt.Errorf("expected %d to have been sent, so far %d", 2, numSent)
